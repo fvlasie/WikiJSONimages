@@ -1,0 +1,38 @@
+#!perl
+
+use JSON qw( decode_json );    
+use Data::Dumper;              
+use strict;                    
+use warnings;                  
+
+my $json = join"",<>;
+
+# Decode the entire JSON
+my $decoded_json = decode_json( $json );
+
+#print Dumper $decoded_json;
+
+my $items = $decoded_json->{'items'};
+
+for (@$items){
+     my $desc = $_->{'description'}{'text'};
+     $_->{'original'}{'source'} =~ /.*\/(.*?\..*)/;
+     my $nick = $1;
+     my $name = $_->{'caption'}{'text'} // ($_->{'description'}{'text'}=~/(^[\w ]+)/)[0];
+     for ($desc,$name){ s/\bSee(:| here\b).*?(\n|\.(?!\w))//g; }
+     $desc =~ s/\n{2,}/\n/g;
+     my $output = '{ "name": "'.
+     $name.
+     '",'.
+     '"caption": "'.
+     $desc.
+     '",'.
+     '"nickname": "'.
+     "wkpd-".$nick.
+     '",'.
+     '"URL": "'.
+     $_->{'original'}{'source'}.
+     '" }'."\n";
+     utf8::encode $output;
+     print $output;
+}

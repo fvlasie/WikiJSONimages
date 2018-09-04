@@ -34,5 +34,5 @@ for (@$items){
      $_->{'original'}{'source'}.
      '" }'."\n";
      utf8::encode $output;
-     print $output;
+     if ($_->{'original'}{'license'}{'code'}=~/^(cc|PD|OldOS|Stamp-PD)/){print $output;}
 }

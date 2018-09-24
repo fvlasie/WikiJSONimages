@@ -1,6 +1,6 @@
 #!perl
 
-use JSON qw( decode_json );    
+use JSON qw( decode_json encode_json );    
 use Data::Dumper;              
 use strict;                    
 use warnings;                  
@@ -17,22 +17,17 @@ my $items = $decoded_json->{'items'};
 for (@$items){
      my $desc = $_->{'description'}{'text'};
      $_->{'original'}{'source'} =~ /.*\/(.*?\..*)/;
+     if (!defined $_->{'original'}{'source'}){next;}
+
      my $nick = $1;
+
      my $name = $_->{'caption'}{'text'} // ($_->{'description'}{'text'}=~/(^[\w ]+)/)[0];
      for ($desc,$name){ s/\bSee(:| here\b).*?(\n|\.(?!\w))//g; }
      $desc =~ s/\n{2,}/\n/g;
-     my $output = '{ "name": "'.
-     $name.
-     '",'.
-     '"caption": "'.
-     "$desc\n\nSource: $_->{'original'}{'source'}".
-     '",'.
-     '"nickname": "'.
-     "wkpd-".$nick.
-     '",'.
-     '"URL": "'.
-     $_->{'original'}{'source'}.
-     '" }'."\n";
-     utf8::encode $output;
-     if ($_->{'license'}{'code'}=~/^(cc|PD|OldOS|Stamp-PD|FAL|OGL|MPL|GFD|GPL|LGPL|BSD)/){print $output;}
+
+     my $caption = "$desc\n\nSource: $_->{'original'}{'source'}";
+     my $URL = $_->{'original'}{'source'};
+     
+     if ($_->{'license'}{'code'}=~/^(cc|PD|OldOS|Stamp-PD|FAL|OGL|MPL|GFD|GPL|LGPL|BSD)/){print encode_json({ "name"=> $name, "caption"=> $caption, "nickname"=> "wkpd-$nick", "URL"=> $URL })."\n";}
 }
+

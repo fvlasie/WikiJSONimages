@@ -28,6 +28,7 @@ for (@$items){
      my $caption = "$desc\n\nSource: $_->{'original'}{'source'}";
      my $URL = $_->{'original'}{'source'};
      
-     if ($_->{'license'}{'code'}=~/^(cc|PD|OldOS|Stamp-PD|FAL|OGL|MPL|GFD|GPL|LGPL|BSD)/){print encode_json({ "name"=> $name, "URL"=> $URL "data"=> {"content"=> $caption, "nickname"=> "wkpd-$nick"} })."\n";}
+     if ($_->{'license'}{'code'}=~/^(cc|PD|OldOS|Stamp-PD|FAL|OGL|MPL|GFD|GPL|LGPL|BSD)/){print encode_json({ 
+     "command"=> "save", "record_type"=> "medium", "URL"=> $URL "data"=> {"name"=> $name, "content"=> $caption, "nickname"=> "wkpd-$nick"} })."\n";}
 }
 

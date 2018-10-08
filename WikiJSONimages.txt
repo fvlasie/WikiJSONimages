@@ -29,6 +29,6 @@ for (@$items){
      my $URL = $_->{'original'}{'source'};
      
      if ($_->{'license'}{'code'}=~/^(cc|PD|OldOS|Stamp-PD|FAL|OGL|MPL|GFD|GPL|LGPL|BSD)/){print encode_json({ 
-     "command"=> "save", "record_type"=> "medium", "URL"=> $URL "data"=> {"name"=> $name, "content"=> $caption, "nickname"=> "wkpd-$nick"} })."\n";}
+     "command"=> "save", "record_type"=> "medium", "url"=> $URL "data"=> {"name"=> $name, "content"=> $caption, "nickname"=> "wkpd-$nick"} })."\n";}
 }
 

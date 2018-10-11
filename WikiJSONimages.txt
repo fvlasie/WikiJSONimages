@@ -1,7 +1,8 @@
 #!perl
 
 use JSON qw( decode_json encode_json );    
-use Data::Dumper;              
+use Data::Dumper;
+use URI::Escape "uri_unescape";
 use strict;                    
 use warnings;                  
 
@@ -19,7 +20,8 @@ for (@$items){
      $_->{'original'}{'source'} =~ /.*\/(.*?\..*)/;
      if (!defined $_->{'original'}{'source'}){next;}
 
-     my $nick = $1;
+     my $nick = uri_unescape($1);
+     utf8::decode($nick);
 
      my $name = $_->{'caption'}{'text'} // ($_->{'description'}{'text'}=~/(^[\w ]+)/)[0];
      for ($desc,$name){ s/\bSee(:| here\b).*?(\n|\.(?!\w))//g; }

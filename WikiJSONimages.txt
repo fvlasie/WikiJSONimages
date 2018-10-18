@@ -16,22 +16,25 @@ my $decoded_json = decode_json( $json );
 my $items = $decoded_json->{'items'};
 
 for (@$items){
-     my $desc = $_->{'description'}{'text'};
-     $_->{'original'}{'source'} =~ /.*\/(.*?\..*)/;
-     if (!defined $_->{'original'}{'source'}){next;}
+    my $desc;
+    if ($_->{'type'}=~/image/){
+        eval {$desc = $_->{'description'}{'text'}};
+        $_->{'original'}{'source'} =~ /.*\/(.*?\..*)/;
+        if (!defined $_->{'original'}{'source'}){next;}
 
-     my $nick = uri_unescape($1);
-     utf8::decode($nick);
+         my $nick = uri_unescape($1);
+        utf8::decode($nick);
 
-     my $name = $_->{'caption'}{'text'} // ($_->{'description'}{'text'}=~/(^[\w ]+)/)[0];
-     for ($desc,$name){ s/\bSee(:| here\b).*?(\n|\.(?!\w))//g; }
-     $desc =~ s/\n{2,}/\n/g;
+        my $name = $_->{'caption'}{'text'} // ($desc=~/(^[\w ]+)/)[0];
+        for ($desc,$name){ s/\bSee(:| here\b).*?(\n|\.(?!\w))//g; }
+        $desc =~ s/\n{2,}/\n/g;
 
-     my $caption = "$desc\n\nSource: $_->{'original'}{'source'}";
-     my $URL = $_->{'original'}{'source'};
+        my $caption = "$desc\n\nSource: $_->{'original'}{'source'}";
+        my $URL = $_->{'original'}{'source'};
      
      if ($_->{'license'}{'code'}=~/^(cc|PD|OldOS|Stamp-PD|FAL|OGL|MPL|GFD|GPL|LGPL|BSD)/){print encode_json({ "command"=> "save", "url"=> "$URL", "record_type"=> "medium", "data"=> {
             "name"=> "$name", "content"=> "$caption", "nickname"=> "wkpd-$nick", "subtype"=> "picture"}
                 })};
+     }
 }
 
